@@ -6,8 +6,21 @@ import time
 
 
 class DartsMatchDao:
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        if DartsMatchDao.__instance is None:
+            with threading.Lock():
+                if DartsMatchDao.__instance is None:  # Double locking mechanism
+                    DartsMatchDao()
+        return DartsMatchDao.__instance
 
     def __init__(self):
+        if DartsMatchDao.__instance is not None:
+            raise Exception("This is a singleton!")
+        else:
+            DartsMatchDao.__instance = self
         self.db = TinyDB('db.json')
         self.lock = threading.Lock()
         self.rand = random.random()
